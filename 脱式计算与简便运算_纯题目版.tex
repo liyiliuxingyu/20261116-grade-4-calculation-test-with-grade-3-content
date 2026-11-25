@@ -1,0 +1,143 @@
+% !TeX program = xelatex
+\documentclass[UTF8,zihao=-4,fontset=fandol]{ctexart}
+\usepackage[a3paper,left=14mm,right=14mm,top=14mm,bottom=12mm]{geometry}
+\usepackage{amsmath,array}
+\usepackage[table]{xcolor}
+\usepackage[hidelinks,unicode,pdftitle={脱式计算与简便运算　纯题目版}]{hyperref}
+
+\definecolor{gridgray}{gray}{0.68}
+\definecolor{secondary}{gray}{0.28}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\tabcolsep}{0pt}
+\setlength{\arrayrulewidth}{.42pt}
+\arrayrulecolor{gridgray}
+
+\newlength{\studentcellwidth}
+\newlength{\problemwidth}
+\newcolumntype{Q}{>{\raggedright\arraybackslash}p{\studentcellwidth}}
+\newcommand{\InfoBlank}[2]{#1\enspace\rule[-.55ex]{#2}{.5pt}}
+\newcommand{\QuestionHeader}[2]{%
+  {\heiti\fontsize{32}{40}\selectfont #1}\hfill
+  {\heiti\fontsize{15}{20}\selectfont 满分 100 分}\par
+  \vspace{5mm}%
+  {\kaishu\fontsize{14}{19}\selectfont
+    \InfoBlank{班级}{26mm}\hspace{14mm}%
+    \InfoBlank{姓名}{32mm}\hfill\InfoBlank{得分}{21mm}}\par
+  \vspace{4mm}%
+  {\heiti\fontsize{14}{19}\selectfont #2}\par
+  \vspace{3mm}%
+  {\color{gridgray}\hrule height .62pt}%
+  \nointerlineskip
+}
+\newcommand{\QuestionFooter}[1]{%
+  \vfill\par
+  {\centering\color{secondary}\fontsize{11}{14}\selectfont 第 #1 页\enspace /\enspace 共 4 页\par}%
+}
+\newcommand{\GridWidth}[1]{%
+  \setlength{\studentcellwidth}{\dimexpr(\textwidth-\arrayrulewidth*\numexpr#1-1\relax)/#1\relax}%
+}
+\newcommand{\AnswerBlank}{\hspace{1.3mm}\rule[-.55ex]{17.5mm}{.5pt}}
+\newcommand{\ProblemCell}[4]{%
+  \begin{minipage}[t][#1][t]{\linewidth}%
+    \vspace*{3.2mm}%
+    \noindent\hspace*{3.5mm}%
+    \begin{minipage}[t]{\dimexpr\linewidth-7mm\relax}%
+      {\heiti\fontsize{12}{15}\selectfont #2.}\hfill
+      {\kaishu\fontsize{11}{14}\selectfont\color{secondary}（#3 分）}\par
+      \vspace{1.2mm}%
+      {\fontsize{17.28}{22}\selectfont
+       \settowidth{\problemwidth}{#4}%
+       \ifdim\problemwidth>\linewidth
+         \PackageError{student-questions}{Question too wide: #2}{Adjust column width or math size.}%
+       \fi
+       \noindent#4\par}%
+    \end{minipage}%
+  \end{minipage}%
+}
+
+\begin{document}
+
+\QuestionHeader{脱式计算}{脱式计算，能简便计算的要简便计算。}
+\GridWidth{3}
+\noindent\begin{tabular}{@{}Q|Q|Q@{}}
+\ProblemCell{83mm}{1}{9}{\(27\times(129+33\times3)\)} &
+\ProblemCell{83mm}{2}{9}{\(378\div(19+963\div9)\)} &
+\ProblemCell{83mm}{3}{8}{\(9\times[792\div(110-66)]\)} \\ \hline
+\ProblemCell{83mm}{4}{8}{\([648\div(27+27)]\times362\)} &
+\ProblemCell{83mm}{5}{8}{\(936\div[(29+10)\times8]\)} &
+\ProblemCell{83mm}{6}{9}{\(486\times[(18-13)+7\times7]\)} \\ \hline
+\ProblemCell{83mm}{7}{8}{\(924\div[(22+22)\times7]\)} &
+\ProblemCell{83mm}{8}{8}{\((58-16\times2)\times245\)} &
+\ProblemCell{83mm}{9}{8}{\(315\div[135-(11+9)\times5]\)} \\ \hline
+\ProblemCell{83mm}{10}{8}{\(288\div[(239+337)\div18]\)} &
+\ProblemCell{83mm}{11}{9}{\(13\times[(576-298)\times25]\)} &
+\ProblemCell{83mm}{12}{8}{\([322\div(117-71)]\times39\)} \\ \hline
+\end{tabular}\par
+\QuestionFooter{1}
+\newpage
+\QuestionHeader{三年级综合练习卷}{列竖式计算，把得数写在等号后面。有余数的要写出商和余数。}
+\GridWidth{4}
+\noindent\begin{tabular}{@{}Q|Q|Q|Q@{}}
+\ProblemCell{83mm}{1}{7}{\(376\times697=\)\AnswerBlank} &
+\ProblemCell{83mm}{2}{6}{\(35\times31=\)\AnswerBlank} &
+\ProblemCell{83mm}{3}{6}{\(481\times18=\)\AnswerBlank} &
+\ProblemCell{83mm}{4}{6}{\(63\times56=\)\AnswerBlank} \\ \hline
+\ProblemCell{83mm}{5}{6}{\(650\div26=\)\AnswerBlank} &
+\ProblemCell{83mm}{6}{6}{\(61\times45=\)\AnswerBlank} &
+\ProblemCell{83mm}{7}{6}{\(392\times18=\)\AnswerBlank} &
+\ProblemCell{83mm}{8}{7}{\(504\times568=\)\AnswerBlank} \\ \hline
+\ProblemCell{83mm}{9}{6}{\(3652\times46=\)\AnswerBlank} &
+\ProblemCell{83mm}{10}{6}{\(107\times16=\)\AnswerBlank} &
+\ProblemCell{83mm}{11}{6}{\(802\times19=\)\AnswerBlank} &
+\ProblemCell{83mm}{12}{6}{\(840\div20=\)\AnswerBlank} \\ \hline
+\ProblemCell{83mm}{13}{6}{\(79\times95=\)\AnswerBlank} &
+\ProblemCell{83mm}{14}{6}{\(770\div35=\)\AnswerBlank} &
+\ProblemCell{83mm}{15}{7}{\(456\div50=\)\AnswerBlank} &
+\ProblemCell{83mm}{16}{7}{\(152\div30=\)\AnswerBlank} \\ \hline
+\end{tabular}\par
+\QuestionFooter{2}
+\newpage
+\QuestionHeader{简便运算综合练习卷}{脱式计算，能简便计算的要简便计算。}
+\GridWidth{3}
+\noindent\begin{tabular}{@{}Q|Q|Q@{}}
+\ProblemCell{53mm}{1}{6}{\(172+398\)} &
+\ProblemCell{53mm}{2}{5}{\((52+88)+12\)} &
+\ProblemCell{53mm}{3}{5}{\(496-89-111\)} \\ \hline
+\ProblemCell{53mm}{4}{6}{\(56\times99\)} &
+\ProblemCell{53mm}{5}{6}{\(24\times271+24\times229\)} &
+\ProblemCell{53mm}{6}{6}{\(97\times105\)} \\ \hline
+\ProblemCell{53mm}{7}{5}{\(280\div(5\times8)\)} &
+\ProblemCell{53mm}{8}{5}{\(183-(41+83)\)} &
+\ProblemCell{53mm}{9}{6}{\(11+11\times99\)} \\ \hline
+\ProblemCell{53mm}{10}{6}{\(25\times330-25\times30\)} &
+\ProblemCell{53mm}{11}{5}{\(240\div5\div12\)} &
+\ProblemCell{53mm}{12}{5}{\(4100\div4\div25\)} \\ \hline
+\ProblemCell{53mm}{13}{6}{\(12\times102\)} &
+\ProblemCell{53mm}{14}{6}{\((200-5)\times24\)} &
+\ProblemCell{53mm}{15}{5}{\(4\times83\times5\)} \\ \hline
+\ProblemCell{53mm}{16}{6}{\(29\times103\)} &
+\ProblemCell{53mm}{17}{5}{\(29\times230-29\times30\)} &
+\ProblemCell{53mm}{18}{6}{\(68\times29+68\)} \\ \hline
+\end{tabular}\par
+\QuestionFooter{3}
+\newpage
+\QuestionHeader{简便运算综合练习卷}{脱式计算，能简便计算的要简便计算。}
+\GridWidth{3}
+\noindent\begin{tabular}{@{}Q|Q|Q@{}}
+\ProblemCell{83mm}{1}{8}{\(65-[(5+27)+3]\)} &
+\ProblemCell{83mm}{2}{9}{\(330\div[51-(3+6)\times4]\)} &
+\ProblemCell{83mm}{3}{8}{\(38+38\times39\)} \\ \hline
+\ProblemCell{83mm}{4}{8}{\(320\div[(12+12)-4]\)} &
+\ProblemCell{83mm}{5}{9}{\(195\div[111-(15+9)\times3]\)} &
+\ProblemCell{83mm}{6}{8}{\(49\times104\)} \\ \hline
+\ProblemCell{83mm}{7}{8}{\(18\times301-18\)} &
+\ProblemCell{83mm}{8}{9}{\(760\div[76-(5+4)\times4]\)} &
+\ProblemCell{83mm}{9}{9}{\(378\div[(25+11)-9]\)} \\ \hline
+\ProblemCell{83mm}{10}{8}{\(14\times301-14\)} &
+\ProblemCell{83mm}{11}{8}{\(5\times(30+20)\)} &
+\ProblemCell{83mm}{12}{8}{\(86\times104\)} \\ \hline
+\end{tabular}\par
+\QuestionFooter{4}
+\end{document}

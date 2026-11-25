@@ -1,0 +1,950 @@
+% !TeX program = xelatex
+% 使用 XeLaTeX 编译。ctex 随附的 Fandol 字体用于简体中文。
+\documentclass[UTF8,a4paper,zihao=-4,fontset=fandol]{ctexart}
+\usepackage[left=13mm,right=13mm,top=13mm,bottom=13mm]{geometry}
+\usepackage{amsmath,xcolor,tikz,booktabs,tabularx}
+\usepackage[hidelinks,unicode,pdftitle={脱式计算与简便运算答案}]{hyperref}
+
+\definecolor{题文}{HTML}{202522}
+\definecolor{答案色}{HTML}{9D282D}
+\definecolor{题号色}{HTML}{52615A}
+\definecolor{分隔线}{HTML}{C8D1CB}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\pagestyle{empty}
+
+\newcounter{exercise}
+\newlength{\cellwidth}
+\newlength{\rowheight}
+\newcommand{\PageTitle}[3]{%
+  \setcounter{exercise}{0}%
+  {\heiti\zihao{2} #1}\hfill
+  {\heiti\zihao{5}\color{答案色} 答案\enspace #3\,/\,04}\par
+  \vspace{2mm}%
+  {\kaishu\zihao{-4}\color{题号色}#2}\par
+  \vspace{3mm}%
+  {\color{题号色}\hrule height .65pt}%
+}
+\newcommand{\Cell}[1]{%
+  \begin{minipage}[t][\rowheight][t]{\cellwidth}%
+    \vspace*{3.6mm}%
+    \stepcounter{exercise}%
+    \noindent\makebox[1.65em][l]{\color{题号色}\fontsize{9}{10}\selectfont\theexercise.}%
+    #1%
+  \end{minipage}%
+}
+\newcommand{\RowRule}{\par\nointerlineskip{\color{分隔线}\hrule height .35pt}}
+\newcommand{\ThreeColumns}[4]{%
+  \setlength{\cellwidth}{.322\textwidth}\setlength{\rowheight}{#1}%
+  \noindent\Cell{#2}\hfill\Cell{#3}\hfill\Cell{#4}\RowRule
+}
+\newcommand{\FourColumns}[4]{%
+  \setlength{\cellwidth}{.242\textwidth}\setlength{\rowheight}{59mm}%
+  \noindent\Cell{#1}\hfill\Cell{#2}\hfill\Cell{#3}\hfill\Cell{#4}\RowRule
+}
+\newcommand{\Derive}[1]{%
+  \par\vspace{1.2mm}%
+  {\color{答案色}\linespread{1}\selectfont
+  \setlength{\jot}{1.4pt}%
+  \medmuskip=2.8mu plus 1mu minus 1mu\relax
+  \mathsurround=0pt\relax
+  \(\begin{aligned}[t]#1\end{aligned}\)}\par
+}
+\newcommand{\Solve}[2]{\( #1 \)\Derive{#2}}
+\newcommand{\FillBox}[3]{%
+  \( #1={\color{答案色}#2}\)\par\vspace{2.6mm}%
+  \noindent\makebox[\linewidth][c]{\color{答案色}\raisebox{-\height}{\( #3 \)}}\par
+}
+% 部分积用等宽数学数字对位，十位和百位部分积逐位左移。
+\newcommand{\Product}[4]{%
+  \linespread{1}\selectfont
+  \setlength{\arraycolsep}{1.5pt}%
+  \renewcommand{\arraystretch}{1.18}%
+  \begin{array}{r@{\;}r}
+        & #1 \\
+  \times& #2 \\ \hline
+        & #3 \\ \hline
+        & #4
+  \end{array}%
+}
+\newlength{\digitwidth}
+% 三位被除数各位的右缘对应横坐标 1、2、3。
+\newcommand{\Division}[4]{%
+  \settowidth{\digitwidth}{\(0\)}%
+  \begin{tikzpicture}[x=\digitwidth,y=5.2mm,line width=.45pt,
+    draw=答案色,text=答案色,
+    every node/.style={anchor=base east,inner sep=0pt,outer sep=0pt}]
+    \node at (3,1) {$#3$};
+    \node at (3,0) {$#2$};
+    \node at (-.58,0) {$#1$};
+    \draw (-.34,-.18) .. controls (-.11,.03) and (-.04,.39) .. (-.03,.64) -- (3.09,.64);
+    #4%
+  \end{tikzpicture}%
+}
+\newcommand{\DivisionNumber}[3]{\node at (#2,#3) {$#1$};}
+\newcommand{\DivisionProduct}[4]{%
+  \DivisionNumber{#1}{#2}{#3}%
+  \draw (#4,{#3-.18}) -- (#2,{#3-.18});
+}
+
+
+% 末尾的演算附页，按对应答案页和题号编排。
+\newlength{\workstepwidth}
+\newcommand{\WorkTitle}[3]{%
+  \newpage
+  \setcounter{exercise}{0}%
+  {\heiti\zihao{2} 逐题竖式演算}\hfill
+  {\heiti\zihao{5}\color{答案色} 演算附页\enspace #3\,/\,06}\par
+  \vspace{2mm}%
+  {\kaishu\zihao{-4}\color{题号色} 答案第 #1 页\enspace·\enspace #2}\par
+  \vspace{3mm}%
+  {\color{题号色}\hrule height .65pt}%
+  \fontsize{10.95}{13}\linespread{1}\selectfont
+}
+\newcommand{\WorkCell}[6]{%
+  \begin{minipage}[t][#2][t]{#1}%
+    \vspace*{2mm}%
+    {\color{题号色}\fontsize{9}{10}\selectfont 第 #3 题}\enspace\( #4 \)\par
+    \vspace{1.45mm}%
+    \setlength{\workstepwidth}{\dimexpr\linewidth/#5\relax}%
+    \ifdim\workstepwidth>32mm\setlength{\workstepwidth}{32mm}\fi
+    \noindent#6\par
+  \end{minipage}%
+}
+\newcommand{\WorkStep}[3]{%
+  \begin{minipage}[t]{\workstepwidth}%
+    \centering
+    {\color{题号色}\fontsize{8}{10}\selectfont #1.\enspace\(#2\)}\par
+    \vspace{.9mm}%
+    {\color{答案色}\raisebox{\dimexpr3.4mm-\height\relax}[0pt]{\(#3\)}}\par
+  \end{minipage}%
+}
+\newcommand{\WorkStack}[5]{%
+  \setlength{\arraycolsep}{1.2pt}%
+  \renewcommand{\arraystretch}{.88}%
+  \begin{array}{r@{\;}r}
+        & #2 \\
+  #1    & #3 \\ \hline
+  #4
+        & #5
+  \end{array}%
+}
+% 第二个参数是被除数，第四个参数是被除数的位数。
+\newcommand{\WorkDivision}[5]{%
+  \settowidth{\digitwidth}{\(0\)}%
+  \begin{tikzpicture}[x=\digitwidth,y=3.5mm,line width=.42pt,
+    draw=答案色,text=答案色,
+    every node/.style={anchor=base east,inner sep=0pt,outer sep=0pt}]
+    \node at (#4,1.1) {$#3$};
+    \node at (#4,0) {$#2$};
+    \node at (-.58,0) {$#1$};
+    \draw (-.34,-.18) .. controls (-.11,.03) and (-.04,.54) .. (-.03,.81) -- ({#4+.09},.81);
+    #5%
+  \end{tikzpicture}%
+}
+
+\begin{document}
+\color{题文}
+\PageTitle{脱式计算}{手写练习\enspace·\enspace 12 题}{01}
+\ThreeColumns{59mm}
+{\Solve{27\times(129+33\times3)}{
+  &=27\times(129+99)\\
+  &=27\times(129+100-1)\\
+  &=27\times(229-1)\\
+  &=27\times228\\
+  &=(30-3)\times228\\
+  &=30\times228-3\times228\\
+  &=6840-684\\
+  &=6156}}
+{\Solve{378\div(19+963\div9)}{
+  &=378\div[19+(900+63)\div9]\\
+  &=378\div[19+(900\div9+63\div9)]\\
+  &=378\div[19+(100+7)]\\
+  &=378\div[19+107]\\
+  &=378\div126\\
+  &=3}}
+{\Solve{9\times[792\div(110-66)]}{
+  &=9\times[792\div44]\\
+  &=9\times18\\
+  &=9\times(20-2)\\
+  &=9\times20-9\times2\\
+  &=180-18\\
+  &=162}}
+
+\ThreeColumns{63mm}
+{\Solve{[648\div(27+27)]\times362}{
+  &=[648\div54]\times362\\
+  &=12\times362\\
+  &=(10+2)\times362\\
+  &=10\times362+2\times362\\
+  &=3620+724\\
+  &=4344}}
+{\Solve{936\div[(29+10)\times8]}{
+  &=936\div[39\times8]\\
+  &=936\div8\div39\\
+  &=117\div39\\
+  &=3}}
+{\Solve{486\times[(18-13)+7\times7]}{
+  &=486\times[5+7\times7]\\
+  &=486\times[5+49]\\
+  &=486\times54\\
+  &=486\times(50+4)\\
+  &=486\times50+486\times4\\
+  &=24300+1944\\
+  &=26244}}
+
+\ThreeColumns{55mm}
+{\Solve{924\div[(22+22)\times7]}{
+  &=924\div[44\times7]\\
+  &=924\div7\div44\\
+  &=132\div44\\
+  &=3}}
+{\Solve{(58-16\times2)\times245}{
+  &=(58-32)\times245\\
+  &=26\times245\\
+  &=26\times(250-5)\\
+  &=26\times250-26\times5\\
+  &=6500-130\\
+  &=6370}}
+{\Solve{315\div[135-(11+9)\times5]}{
+  &=315\div[135-20\times5]\\
+  &=315\div[135-100]\\
+  &=315\div35\\
+  &=9}}
+
+\ThreeColumns{59mm}
+{\Solve{288\div[(239+337)\div18]}{
+  &=288\div[576\div18]\\
+  &=288\div[576\div2\div9]\\
+  &=288\div[288\div9]\\
+  &=288\div32\\
+  &=9}}
+{\Solve{13\times[(576-298)\times25]}{
+  &=13\times[278\times25]\\
+  &=13\times[(280-2)\times25]\\
+  &=13\times[280\times25-2\times25]\\
+  &=13\times[7000-50]\\
+  &=13\times7000-13\times50\\
+  &=91000-650\\
+  &=90350}}
+{\Solve{[322\div(117-71)]\times39}{
+  &=[322\div46]\times39\\
+  &=7\times39\\
+  &=7\times(40-1)\\
+  &=7\times40-7\times1\\
+  &=280-7\\
+  &=273}}
+
+\newpage
+\PageTitle{三年级综合练习卷}{原卷第 1 页\enspace·\enspace 16 题\qquad 竖式计算}{02}
+\fontsize{10.95}{14}\selectfont
+\FourColumns
+{\FillBox{376\times697}{262072}{\Product{376}{697}{2632\\&3384\phantom{0}\\&2256\phantom{00}}{262072}}}
+{\FillBox{35\times31}{1085}{\Product{35}{31}{35\\&105\phantom{0}}{1085}}}
+{\FillBox{481\times18}{8658}{\Product{481}{18}{3848\\&481\phantom{0}}{8658}}}
+{\FillBox{63\times56}{3528}{\Product{63}{56}{378\\&315\phantom{0}}{3528}}}
+
+\FourColumns
+{\FillBox{650\div26}{25}{\Division{26}{650}{25}{
+  \DivisionProduct{52}{2}{-1}{0}
+  \DivisionNumber{130}{3}{-2}
+  \DivisionProduct{130}{3}{-3}{0}
+  \DivisionNumber{0}{3}{-4}
+}}}
+{\FillBox{61\times45}{2745}{\Product{61}{45}{305\\&244\phantom{0}}{2745}}}
+{\FillBox{392\times18}{7056}{\Product{392}{18}{3136\\&392\phantom{0}}{7056}}}
+{\FillBox{504\times568}{286272}{\Product{504}{568}{4032\\&3024\phantom{0}\\&2520\phantom{00}}{286272}}}
+
+\FourColumns
+{\FillBox{3652\times46}{167992}{\Product{3652}{46}{21912\\&14608\phantom{0}}{167992}}}
+{\FillBox{107\times16}{1712}{\Product{107}{16}{642\\&107\phantom{0}}{1712}}}
+{\FillBox{802\times19}{15238}{\Product{802}{19}{7218\\&802\phantom{0}}{15238}}}
+{\FillBox{840\div20}{42}{\Division{20}{840}{42}{
+  \DivisionProduct{80}{2}{-1}{0}
+  \DivisionNumber{40}{3}{-2}
+  \DivisionProduct{40}{3}{-3}{1}
+  \DivisionNumber{0}{3}{-4}
+}}}
+
+\FourColumns
+{\FillBox{79\times95}{7505}{\Product{79}{95}{395\\&711\phantom{0}}{7505}}}
+{\FillBox{770\div35}{22}{\Division{35}{770}{22}{
+  \DivisionProduct{70}{2}{-1}{0}
+  \DivisionNumber{70}{3}{-2}
+  \DivisionProduct{70}{3}{-3}{1}
+  \DivisionNumber{0}{3}{-4}
+}}}
+{\FillBox{456\div50}{9\cdots\!\cdots6}{\Division{50}{456}{9}{
+  \DivisionProduct{450}{3}{-1}{0}
+  \DivisionNumber{6}{3}{-2}
+}}}
+{\FillBox{152\div30}{5\cdots\!\cdots2}{\Division{30}{152}{5}{
+  \DivisionProduct{150}{3}{-1}{0}
+  \DivisionNumber{2}{3}{-2}
+}}}
+
+\newpage
+\zihao{-4}
+\PageTitle{简便运算综合练习卷}{原卷第 2 页\enspace·\enspace 18 题}{03}
+\ThreeColumns{39.5mm}
+{\Solve{172+398}{
+  &=172+(400-2)\\
+  &=172+400-2\\
+  &=572-2\\
+  &=570}}
+{\Solve{(52+88)+12}{
+  &=52+(88+12)\\
+  &=52+100\\
+  &=152}}
+{\Solve{496-89-111}{
+  &=496-(89+111)\\
+  &=496-200\\
+  &=296}}
+
+\ThreeColumns{39.5mm}
+{\Solve{56\times99}{
+  &=56\times(100-1)\\
+  &=56\times100-56\times1\\
+  &=5600-56\\
+  &=5544}}
+{\Solve{24\times271+24\times229}{
+  &=24\times(271+229)\\
+  &=24\times500\\
+  &=12000}}
+{\Solve{97\times105}{
+  &=(100-3)\times105\\
+  &=100\times105-3\times105\\
+  &=10500-315\\
+  &=10185}}
+
+\ThreeColumns{39.5mm}
+{\Solve{280\div(5\times8)}{
+  &=280\div8\div5\\
+  &=35\div5\\
+  &=7}}
+{\Solve{183-(41+83)}{
+  &=183-83-41\\
+  &=100-41\\
+  &=59}}
+{\Solve{11+11\times99}{
+  &=11\times1+11\times99\\
+  &=11\times(1+99)\\
+  &=11\times100\\
+  &=1100}}
+
+\ThreeColumns{39.5mm}
+{\Solve{25\times330-25\times30}{
+  &=25\times(330-30)\\
+  &=25\times300\\
+  &=7500}}
+{\Solve{240\div5\div12}{
+  &=240\div12\div5\\
+  &=20\div5\\
+  &=4}}
+{\Solve{4100\div4\div25}{
+  &=4100\div(4\times25)\\
+  &=4100\div100\\
+  &=41}}
+
+\ThreeColumns{39.5mm}
+{\Solve{12\times102}{
+  &=12\times(100+2)\\
+  &=12\times100+12\times2\\
+  &=1200+24\\
+  &=1224}}
+{\Solve{(200-5)\times24}{
+  &=200\times24-5\times24\\
+  &=4800-120\\
+  &=4680}}
+{\Solve{4\times83\times5}{
+  &=(4\times5)\times83\\
+  &=20\times83\\
+  &=1660}}
+
+\ThreeColumns{39.5mm}
+{\Solve{29\times103}{
+  &=29\times(100+3)\\
+  &=29\times100+29\times3\\
+  &=2900+87\\
+  &=2987}}
+{\Solve{29\times230-29\times30}{
+  &=29\times(230-30)\\
+  &=29\times200\\
+  &=5800}}
+{\Solve{68\times29+68}{
+  &=68\times29+68\times1\\
+  &=68\times(29+1)\\
+  &=68\times30\\
+  &=2040}}
+
+\newpage
+\PageTitle{简便运算综合练习卷}{原卷第 1 页\enspace·\enspace 12 题\qquad 一、脱式计算}{04}
+\ThreeColumns{59mm}
+{\Solve{65-[(5+27)+3]}{
+  &=65-[5+(27+3)]\\
+  &=65-[5+30]\\
+  &=65-35\\
+  &=30}}
+{\Solve{330\div[51-(3+6)\times4]}{
+  &=330\div[51-9\times4]\\
+  &=330\div[51-36]\\
+  &=330\div15\\
+  &=22}}
+{\Solve{38+38\times39}{
+  &=38\times1+38\times39\\
+  &=38\times(1+39)\\
+  &=38\times40\\
+  &=1520}}
+
+\ThreeColumns{59mm}
+{\Solve{320\div[(12+12)-4]}{
+  &=320\div[24-4]\\
+  &=320\div20\\
+  &=16}}
+{\Solve{195\div[111-(15+9)\times3]}{
+  &=195\div[111-24\times3]\\
+  &=195\div[111-72]\\
+  &=195\div39\\
+  &=5}}
+{\Solve{49\times104}{
+  &=49\times(100+4)\\
+  &=49\times100+49\times4\\
+  &=4900+196\\
+  &=5096}}
+
+\ThreeColumns{59mm}
+{\Solve{18\times301-18}{
+  &=18\times301-18\times1\\
+  &=18\times(301-1)\\
+  &=18\times300\\
+  &=5400}}
+{\Solve{760\div[76-(5+4)\times4]}{
+  &=760\div[76-9\times4]\\
+  &=760\div[76-36]\\
+  &=760\div40\\
+  &=19}}
+{\Solve{378\div[(25+11)-9]}{
+  &=378\div[25+(11-9)]\\
+  &=378\div[25+2]\\
+  &=378\div27\\
+  &=14}}
+
+\ThreeColumns{59mm}
+{\Solve{14\times301-14}{
+  &=14\times301-14\times1\\
+  &=14\times(301-1)\\
+  &=14\times300\\
+  &=4200}}
+{\Solve{5\times(30+20)}{
+  &=5\times50\\
+  &=250}}
+{\Solve{86\times104}{
+  &=86\times(100+4)\\
+  &=86\times100+86\times4\\
+  &=8600+344\\
+  &=8944}}
+\newpage
+\setcounter{exercise}{0}
+{\heiti\zihao{2} 评分标准}\hfill
+{\heiti\zihao{5}\color{答案色} 每页满分 100 分}\par
+\vspace{2mm}
+{\kaishu\zihao{-4}\color{题号色} 题号按对应答案页排列}\par
+\vspace{3mm}
+{\color{题号色}\hrule height .65pt}
+
+\vspace{8mm}
+{\heiti\zihao{4} 各题分值}\par
+\vspace{2.5mm}
+{\fontsize{10.95}{14}\selectfont\renewcommand{\arraystretch}{1.45}
+\begin{tabularx}{\textwidth}{@{}p{30mm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X r@{}}
+\toprule
+\heiti 答案页 & \multicolumn{2}{l}{\heiti 题号及分值} & \heiti 合计 \\
+\midrule
+第 1 页\newline 脱式计算
+  & \textbf{每题 9 分}\newline 1、2、6、11
+  & \textbf{每题 8 分}\newline 3、4、5、7、8、9、10、12
+  & 100 分 \\
+\addlinespace[3pt]
+第 2 页\newline 竖式计算
+  & \textbf{每题 7 分}\newline 1、8、15、16
+  & \textbf{每题 6 分}\newline 2、3、4、5、6、7、9、10、11、12、13、14
+  & 100 分 \\
+\addlinespace[3pt]
+第 3 页\newline 简便运算\newline 原卷第 2 页
+  & \textbf{每题 6 分}\newline 1、4、5、6、9、10、13、14、16、18
+  & \textbf{每题 5 分}\newline 2、3、7、8、11、12、15、17
+  & 100 分 \\
+\addlinespace[3pt]
+第 4 页\newline 简便运算\newline 原卷第 1 页
+  & \textbf{每题 9 分}\newline 2、5、8、9
+  & \textbf{每题 8 分}\newline 1、3、4、6、7、10、11、12
+  & 100 分 \\
+\bottomrule
+\end{tabularx}
+\par}
+
+\vspace{8mm}
+{\heiti\zihao{4} 每题评分细则}\par
+\vspace{2.5mm}
+{\fontsize{10.95}{14}\selectfont\renewcommand{\arraystretch}{1.45}
+\begin{tabularx}{\textwidth}{@{}p{27mm} p{21mm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X r@{}}
+\toprule
+\heiti 答案页 & \heiti 每题满分 & \heiti 顺序或书写 & \heiti 计算过程 & \heiti 得数 \\
+\midrule
+第 1、4 页 & 8 分 & 运算顺序和括号处理\quad 3 分 & 脱式过程\quad 3 分 & 2 分 \\
+第 1、4 页 & 9 分 & 运算顺序和括号处理\quad 3 分 & 脱式过程\quad 4 分 & 2 分 \\
+\addlinespace[3pt]
+第 2 页 & 6 分 & 数位对齐与书写格式\quad 1 分 & 竖式过程\quad 3 分 & 2 分 \\
+第 2 页 & 7 分 & 数位对齐与书写格式\quad 1 分 & 竖式过程\quad 4 分 & 2 分 \\
+\addlinespace[3pt]
+第 3 页 & 5 分 & 运算顺序或方法\quad 1 分 & 脱式过程\quad 2 分 & 2 分 \\
+第 3 页 & 6 分 & 运算顺序或方法\quad 1 分 & 脱式过程\quad 3 分 & 2 分 \\
+\bottomrule
+\end{tabularx}
+\par}
+
+\vspace{7mm}
+{\heiti\zihao{4} 批改说明}\par
+\vspace{2mm}
+{\zihao{5}
+只写对得数给 2 分。第 2 页第 15、16 题的得数分按商、余数各 1 分计。\par
+\vspace{1.4mm}
+一处计算出错，后面沿用该数计算正确的步骤和得数照给分，只扣出错步骤的分。\par
+\vspace{1.4mm}
+题面明确要求能简算的要简算时，简算计入过程分。\par
+}
+
+
+\WorkTitle{1}{第 1 至 6 题}{01}
+\noindent\WorkCell{\textwidth}{39mm}{1}{27\times(129+33\times3)}{6}{%
+  \WorkStep{1}{33 \times 3}{\WorkStack{\times}{33}{3}{}{99}}%
+  \WorkStep{2}{129 + 100}{\WorkStack{+}{129}{100}{}{229}}%
+  \WorkStep{3}{229 - 1}{\WorkStack{-}{229}{1}{}{228}}%
+  \WorkStep{4}{30 \times 228}{\WorkStack{\times}{30}{228}{& 240 \\
+    & 60\phantom{0} \\
+    & 60\phantom{00} \\
+    \hline}{6840}}%
+  \WorkStep{5}{3 \times 228}{\WorkStack{\times}{3}{228}{& 24 \\
+    & 6\phantom{0} \\
+    & 6\phantom{00} \\
+    \hline}{684}}%
+  \WorkStep{6}{6840 - 684}{\WorkStack{-}{6840}{684}{}{6156}}%
+}\RowRule
+
+\noindent\WorkCell{\textwidth}{45mm}{2}{378\div(19+963\div9)}{5}{%
+  \WorkStep{1}{900 \div 9}{\WorkDivision{9}{900}{100}{3}{
+    \DivisionProduct{9}{1}{-1}{0}
+    \DivisionNumber{0}{2}{-2}
+    \DivisionProduct{0}{2}{-3}{1}
+    \DivisionNumber{0}{3}{-4}
+    \DivisionProduct{0}{3}{-5}{2}
+    \DivisionNumber{0}{3}{-6}
+  }}%
+  \WorkStep{2}{63 \div 9}{\WorkDivision{9}{63}{7}{2}{
+    \DivisionProduct{63}{2}{-1}{0}
+    \DivisionNumber{0}{2}{-2}
+  }}%
+  \WorkStep{3}{100 + 7}{\WorkStack{+}{100}{7}{}{107}}%
+  \WorkStep{4}{19 + 107}{\WorkStack{+}{19}{107}{}{126}}%
+  \WorkStep{5}{378 \div 126}{\WorkDivision{126}{378}{3}{3}{
+    \DivisionProduct{378}{3}{-1}{0}
+    \DivisionNumber{0}{3}{-2}
+  }}%
+}\RowRule
+
+\noindent\WorkCell{\textwidth}{40mm}{3}{9\times[792\div(110-66)]}{5}{%
+  \WorkStep{1}{110 - 66}{\WorkStack{-}{110}{66}{}{44}}%
+  \WorkStep{2}{792 \div 44}{\WorkDivision{44}{792}{18}{3}{
+    \DivisionProduct{44}{2}{-1}{0}
+    \DivisionNumber{352}{3}{-2}
+    \DivisionProduct{352}{3}{-3}{0}
+    \DivisionNumber{0}{3}{-4}
+  }}%
+  \WorkStep{3}{9 \times 20}{\WorkStack{\times}{9}{20}{}{180}}%
+  \WorkStep{4}{9 \times 2}{\WorkStack{\times}{9}{2}{}{18}}%
+  \WorkStep{5}{180 - 18}{\WorkStack{-}{180}{18}{}{162}}%
+}\RowRule
+
+\noindent\WorkCell{\textwidth}{39mm}{4}{[648\div(27+27)]\times362}{5}{%
+  \WorkStep{1}{27 + 27}{\WorkStack{+}{27}{27}{}{54}}%
+  \WorkStep{2}{648 \div 54}{\WorkDivision{54}{648}{12}{3}{
+    \DivisionProduct{54}{2}{-1}{0}
+    \DivisionNumber{108}{3}{-2}
+    \DivisionProduct{108}{3}{-3}{0}
+    \DivisionNumber{0}{3}{-4}
+  }}%
+  \WorkStep{3}{10 \times 362}{\WorkStack{\times}{10}{362}{& 20 \\
+    & 60\phantom{0} \\
+    & 30\phantom{00} \\
+    \hline}{3620}}%
+  \WorkStep{4}{2 \times 362}{\WorkStack{\times}{2}{362}{& 4 \\
+    & 12\phantom{0} \\
+    & 6\phantom{00} \\
+    \hline}{724}}%
+  \WorkStep{5}{3620 + 724}{\WorkStack{+}{3620}{724}{}{4344}}%
+}\RowRule
+
+\noindent\WorkCell{\textwidth}{45mm}{5}{936\div[(29+10)\times8]}{3}{%
+  \WorkStep{1}{29 + 10}{\WorkStack{+}{29}{10}{}{39}}%
+  \WorkStep{2}{936 \div 8}{\WorkDivision{8}{936}{117}{3}{
+    \DivisionProduct{8}{1}{-1}{0}
+    \DivisionNumber{13}{2}{-2}
+    \DivisionProduct{8}{2}{-3}{0}
+    \DivisionNumber{56}{3}{-4}
+    \DivisionProduct{56}{3}{-5}{1}
+    \DivisionNumber{0}{3}{-6}
+  }}%
+  \WorkStep{3}{117 \div 39}{\WorkDivision{39}{117}{3}{3}{
+    \DivisionProduct{117}{3}{-1}{0}
+    \DivisionNumber{0}{3}{-2}
+  }}%
+}\RowRule
+
+\noindent\WorkCell{\textwidth}{34mm}{6}{486\times[(18-13)+7\times7]}{6}{%
+  \WorkStep{1}{18 - 13}{\WorkStack{-}{18}{13}{}{5}}%
+  \WorkStep{2}{7 \times 7}{\WorkStack{\times}{7}{7}{}{49}}%
+  \WorkStep{3}{5 + 49}{\WorkStack{+}{5}{49}{}{54}}%
+  \WorkStep{4}{486 \times 50}{\WorkStack{\times}{486}{50}{}{24300}}%
+  \WorkStep{5}{486 \times 4}{\WorkStack{\times}{486}{4}{}{1944}}%
+  \WorkStep{6}{24300 + 1944}{\WorkStack{+}{24300}{1944}{}{26244}}%
+}\RowRule
+
+\WorkTitle{1}{第 7 至 12 题}{02}
+\noindent\WorkCell{\textwidth}{45mm}{7}{924\div[(22+22)\times7]}{3}{%
+  \WorkStep{1}{22 + 22}{\WorkStack{+}{22}{22}{}{44}}%
+  \WorkStep{2}{924 \div 7}{\WorkDivision{7}{924}{132}{3}{
+    \DivisionProduct{7}{1}{-1}{0}
+    \DivisionNumber{22}{2}{-2}
+    \DivisionProduct{21}{2}{-3}{0}
+    \DivisionNumber{14}{3}{-4}
+    \DivisionProduct{14}{3}{-5}{1}
+    \DivisionNumber{0}{3}{-6}
+  }}%
+  \WorkStep{3}{132 \div 44}{\WorkDivision{44}{132}{3}{3}{
+    \DivisionProduct{132}{3}{-1}{0}
+    \DivisionNumber{0}{3}{-2}
+  }}%
+}\RowRule
+
+\noindent\WorkCell{\textwidth}{37mm}{8}{(58-16\times2)\times245}{5}{%
+  \WorkStep{1}{16 \times 2}{\WorkStack{\times}{16}{2}{}{32}}%
+  \WorkStep{2}{58 - 32}{\WorkStack{-}{58}{32}{}{26}}%
+  \WorkStep{3}{26 \times 250}{\WorkStack{\times}{26}{250}{& 130\phantom{0} \\
+    & 52\phantom{00} \\
+    \hline}{6500}}%
+  \WorkStep{4}{26 \times 5}{\WorkStack{\times}{26}{5}{}{130}}%
+  \WorkStep{5}{6500 - 130}{\WorkStack{-}{6500}{130}{}{6370}}%
+}\RowRule
+
+\noindent\WorkCell{\textwidth}{37mm}{9}{315\div[135-(11+9)\times5]}{4}{%
+  \WorkStep{1}{11 + 9}{\WorkStack{+}{11}{9}{}{20}}%
+  \WorkStep{2}{20 \times 5}{\WorkStack{\times}{20}{5}{}{100}}%
+  \WorkStep{3}{135 - 100}{\WorkStack{-}{135}{100}{}{35}}%
+  \WorkStep{4}{315 \div 35}{\WorkDivision{35}{315}{9}{3}{
+    \DivisionProduct{315}{3}{-1}{0}
+    \DivisionNumber{0}{3}{-2}
+  }}%
+}\RowRule
+
+\noindent\WorkCell{\textwidth}{45mm}{10}{288\div[(239+337)\div18]}{4}{%
+  \WorkStep{1}{239 + 337}{\WorkStack{+}{239}{337}{}{576}}%
+  \WorkStep{2}{576 \div 2}{\WorkDivision{2}{576}{288}{3}{
+    \DivisionProduct{4}{1}{-1}{0}
+    \DivisionNumber{17}{2}{-2}
+    \DivisionProduct{16}{2}{-3}{0}
+    \DivisionNumber{16}{3}{-4}
+    \DivisionProduct{16}{3}{-5}{1}
+    \DivisionNumber{0}{3}{-6}
+  }}%
+  \WorkStep{3}{288 \div 9}{\WorkDivision{9}{288}{32}{3}{
+    \DivisionProduct{27}{2}{-1}{0}
+    \DivisionNumber{18}{3}{-2}
+    \DivisionProduct{18}{3}{-3}{1}
+    \DivisionNumber{0}{3}{-4}
+  }}%
+  \WorkStep{4}{288 \div 32}{\WorkDivision{32}{288}{9}{3}{
+    \DivisionProduct{288}{3}{-1}{0}
+    \DivisionNumber{0}{3}{-2}
+  }}%
+}\RowRule
+
+\noindent\WorkCell{\textwidth}{40mm}{11}{13\times[(576-298)\times25]}{7}{%
+  \WorkStep{1}{576 - 298}{\WorkStack{-}{576}{298}{}{278}}%
+  \WorkStep{2}{280 \times 25}{\WorkStack{\times}{280}{25}{& 1400 \\
+    & 560\phantom{0} \\
+    \hline}{7000}}%
+  \WorkStep{3}{2 \times 25}{\WorkStack{\times}{2}{25}{& 10 \\
+    & 4\phantom{0} \\
+    \hline}{50}}%
+  \WorkStep{4}{7000 - 50}{\WorkStack{-}{7000}{50}{}{6950}}%
+  \WorkStep{5}{13 \times 7000}{\WorkStack{\times}{13}{7000}{}{91000}}%
+  \WorkStep{6}{13 \times 50}{\WorkStack{\times}{13}{50}{}{650}}%
+  \WorkStep{7}{91000 - 650}{\WorkStack{-}{91000}{650}{}{90350}}%
+}\RowRule
+
+\noindent\WorkCell{\textwidth}{38mm}{12}{[322\div(117-71)]\times39}{4}{%
+  \WorkStep{1}{117 - 71}{\WorkStack{-}{117}{71}{}{46}}%
+  \WorkStep{2}{322 \div 46}{\WorkDivision{46}{322}{7}{3}{
+    \DivisionProduct{322}{3}{-1}{0}
+    \DivisionNumber{0}{3}{-2}
+  }}%
+  \WorkStep{3}{7 \times 40}{\WorkStack{\times}{7}{40}{}{280}}%
+  \WorkStep{4}{280 - 7}{\WorkStack{-}{280}{7}{}{273}}%
+}\RowRule
+
+\WorkTitle{2}{第 1 至 16 题}{03}
+\fontsize{10.95}{14}\selectfont
+\FourColumns
+{\FillBox{376\times697}{262072}{\Product{376}{697}{2632\\&3384\phantom{0}\\&2256\phantom{00}}{262072}}}
+{\FillBox{35\times31}{1085}{\Product{35}{31}{35\\&105\phantom{0}}{1085}}}
+{\FillBox{481\times18}{8658}{\Product{481}{18}{3848\\&481\phantom{0}}{8658}}}
+{\FillBox{63\times56}{3528}{\Product{63}{56}{378\\&315\phantom{0}}{3528}}}
+
+\FourColumns
+{\FillBox{650\div26}{25}{\Division{26}{650}{25}{
+  \DivisionProduct{52}{2}{-1}{0}
+  \DivisionNumber{130}{3}{-2}
+  \DivisionProduct{130}{3}{-3}{0}
+  \DivisionNumber{0}{3}{-4}
+}}}
+{\FillBox{61\times45}{2745}{\Product{61}{45}{305\\&244\phantom{0}}{2745}}}
+{\FillBox{392\times18}{7056}{\Product{392}{18}{3136\\&392\phantom{0}}{7056}}}
+{\FillBox{504\times568}{286272}{\Product{504}{568}{4032\\&3024\phantom{0}\\&2520\phantom{00}}{286272}}}
+
+\FourColumns
+{\FillBox{3652\times46}{167992}{\Product{3652}{46}{21912\\&14608\phantom{0}}{167992}}}
+{\FillBox{107\times16}{1712}{\Product{107}{16}{642\\&107\phantom{0}}{1712}}}
+{\FillBox{802\times19}{15238}{\Product{802}{19}{7218\\&802\phantom{0}}{15238}}}
+{\FillBox{840\div20}{42}{\Division{20}{840}{42}{
+  \DivisionProduct{80}{2}{-1}{0}
+  \DivisionNumber{40}{3}{-2}
+  \DivisionProduct{40}{3}{-3}{1}
+  \DivisionNumber{0}{3}{-4}
+}}}
+
+\FourColumns
+{\FillBox{79\times95}{7505}{\Product{79}{95}{395\\&711\phantom{0}}{7505}}}
+{\FillBox{770\div35}{22}{\Division{35}{770}{22}{
+  \DivisionProduct{70}{2}{-1}{0}
+  \DivisionNumber{70}{3}{-2}
+  \DivisionProduct{70}{3}{-3}{1}
+  \DivisionNumber{0}{3}{-4}
+}}}
+{\FillBox{456\div50}{9\cdots\!\cdots6}{\Division{50}{456}{9}{
+  \DivisionProduct{450}{3}{-1}{0}
+  \DivisionNumber{6}{3}{-2}
+}}}
+{\FillBox{152\div30}{5\cdots\!\cdots2}{\Division{30}{152}{5}{
+  \DivisionProduct{150}{3}{-1}{0}
+  \DivisionNumber{2}{3}{-2}
+}}}
+
+\WorkTitle{3}{第 1 至 10 题}{04}
+\noindent\WorkCell{.487\textwidth}{47mm}{1}{172+398}{2}{%
+  \WorkStep{1}{172 + 400}{\WorkStack{+}{172}{400}{}{572}}%
+  \WorkStep{2}{572 - 2}{\WorkStack{-}{572}{2}{}{570}}%
+}\hfill
+\WorkCell{.487\textwidth}{47mm}{2}{(52+88)+12}{2}{%
+  \WorkStep{1}{88 + 12}{\WorkStack{+}{88}{12}{}{100}}%
+  \WorkStep{2}{52 + 100}{\WorkStack{+}{52}{100}{}{152}}%
+}\RowRule
+
+\noindent\WorkCell{.487\textwidth}{47mm}{3}{496-89-111}{2}{%
+  \WorkStep{1}{89 + 111}{\WorkStack{+}{89}{111}{}{200}}%
+  \WorkStep{2}{496 - 200}{\WorkStack{-}{496}{200}{}{296}}%
+}\hfill
+\WorkCell{.487\textwidth}{47mm}{4}{56\times99}{2}{%
+  \WorkStep{1}{56 \times 100}{\WorkStack{\times}{56}{100}{}{5600}}%
+  \WorkStep{2}{5600 - 56}{\WorkStack{-}{5600}{56}{}{5544}}%
+}\RowRule
+
+\noindent\WorkCell{.487\textwidth}{47mm}{5}{24\times271+24\times229}{2}{%
+  \WorkStep{1}{271 + 229}{\WorkStack{+}{271}{229}{}{500}}%
+  \WorkStep{2}{24 \times 500}{\WorkStack{\times}{24}{500}{}{12000}}%
+}\hfill
+\WorkCell{.487\textwidth}{47mm}{6}{97\times105}{3}{%
+  \WorkStep{1}{100 \times 105}{\WorkStack{\times}{100}{105}{& 500 \\
+    & 100\phantom{00} \\
+    \hline}{10500}}%
+  \WorkStep{2}{3 \times 105}{\WorkStack{\times}{3}{105}{& 15 \\
+    & 3\phantom{00} \\
+    \hline}{315}}%
+  \WorkStep{3}{10500 - 315}{\WorkStack{-}{10500}{315}{}{10185}}%
+}\RowRule
+
+\noindent\WorkCell{.487\textwidth}{47mm}{7}{280\div(5\times8)}{2}{%
+  \WorkStep{1}{280 \div 8}{\WorkDivision{8}{280}{35}{3}{
+    \DivisionProduct{24}{2}{-1}{0}
+    \DivisionNumber{40}{3}{-2}
+    \DivisionProduct{40}{3}{-3}{1}
+    \DivisionNumber{0}{3}{-4}
+  }}%
+  \WorkStep{2}{35 \div 5}{\WorkDivision{5}{35}{7}{2}{
+    \DivisionProduct{35}{2}{-1}{0}
+    \DivisionNumber{0}{2}{-2}
+  }}%
+}\hfill
+\WorkCell{.487\textwidth}{47mm}{8}{183-(41+83)}{2}{%
+  \WorkStep{1}{183 - 83}{\WorkStack{-}{183}{83}{}{100}}%
+  \WorkStep{2}{100 - 41}{\WorkStack{-}{100}{41}{}{59}}%
+}\RowRule
+
+\noindent\WorkCell{.487\textwidth}{47mm}{9}{11+11\times99}{2}{%
+  \WorkStep{1}{1 + 99}{\WorkStack{+}{1}{99}{}{100}}%
+  \WorkStep{2}{11 \times 100}{\WorkStack{\times}{11}{100}{}{1100}}%
+}\hfill
+\WorkCell{.487\textwidth}{47mm}{10}{25\times330-25\times30}{2}{%
+  \WorkStep{1}{330 - 30}{\WorkStack{-}{330}{30}{}{300}}%
+  \WorkStep{2}{25 \times 300}{\WorkStack{\times}{25}{300}{}{7500}}%
+}\RowRule
+
+\WorkTitle{3}{第 11 至 18 题}{05}
+\noindent\WorkCell{.487\textwidth}{58.5mm}{11}{240\div5\div12}{2}{%
+  \WorkStep{1}{240 \div 12}{\WorkDivision{12}{240}{20}{3}{
+    \DivisionProduct{24}{2}{-1}{0}
+    \DivisionNumber{0}{3}{-2}
+    \DivisionProduct{0}{3}{-3}{2}
+    \DivisionNumber{0}{3}{-4}
+  }}%
+  \WorkStep{2}{20 \div 5}{\WorkDivision{5}{20}{4}{2}{
+    \DivisionProduct{20}{2}{-1}{0}
+    \DivisionNumber{0}{2}{-2}
+  }}%
+}\hfill
+\WorkCell{.487\textwidth}{58.5mm}{12}{4100\div4\div25}{2}{%
+  \WorkStep{1}{4 \times 25}{\WorkStack{\times}{4}{25}{& 20 \\
+    & 8\phantom{0} \\
+    \hline}{100}}%
+  \WorkStep{2}{4100 \div 100}{\WorkDivision{100}{4100}{41}{4}{
+    \DivisionProduct{400}{3}{-1}{0}
+    \DivisionNumber{100}{4}{-2}
+    \DivisionProduct{100}{4}{-3}{1}
+    \DivisionNumber{0}{4}{-4}
+  }}%
+}\RowRule
+
+\noindent\WorkCell{.487\textwidth}{58.5mm}{13}{12\times102}{3}{%
+  \WorkStep{1}{12 \times 100}{\WorkStack{\times}{12}{100}{}{1200}}%
+  \WorkStep{2}{12 \times 2}{\WorkStack{\times}{12}{2}{}{24}}%
+  \WorkStep{3}{1200 + 24}{\WorkStack{+}{1200}{24}{}{1224}}%
+}\hfill
+\WorkCell{.487\textwidth}{58.5mm}{14}{(200-5)\times24}{3}{%
+  \WorkStep{1}{200 \times 24}{\WorkStack{\times}{200}{24}{& 800 \\
+    & 400\phantom{0} \\
+    \hline}{4800}}%
+  \WorkStep{2}{5 \times 24}{\WorkStack{\times}{5}{24}{& 20 \\
+    & 10\phantom{0} \\
+    \hline}{120}}%
+  \WorkStep{3}{4800 - 120}{\WorkStack{-}{4800}{120}{}{4680}}%
+}\RowRule
+
+\noindent\WorkCell{.487\textwidth}{58.5mm}{15}{4\times83\times5}{2}{%
+  \WorkStep{1}{4 \times 5}{\WorkStack{\times}{4}{5}{}{20}}%
+  \WorkStep{2}{20 \times 83}{\WorkStack{\times}{20}{83}{& 60 \\
+    & 160\phantom{0} \\
+    \hline}{1660}}%
+}\hfill
+\WorkCell{.487\textwidth}{58.5mm}{16}{29\times103}{3}{%
+  \WorkStep{1}{29 \times 100}{\WorkStack{\times}{29}{100}{}{2900}}%
+  \WorkStep{2}{29 \times 3}{\WorkStack{\times}{29}{3}{}{87}}%
+  \WorkStep{3}{2900 + 87}{\WorkStack{+}{2900}{87}{}{2987}}%
+}\RowRule
+
+\noindent\WorkCell{.487\textwidth}{58.5mm}{17}{29\times230-29\times30}{2}{%
+  \WorkStep{1}{230 - 30}{\WorkStack{-}{230}{30}{}{200}}%
+  \WorkStep{2}{29 \times 200}{\WorkStack{\times}{29}{200}{}{5800}}%
+}\hfill
+\WorkCell{.487\textwidth}{58.5mm}{18}{68\times29+68}{2}{%
+  \WorkStep{1}{29 + 1}{\WorkStack{+}{29}{1}{}{30}}%
+  \WorkStep{2}{68 \times 30}{\WorkStack{\times}{68}{30}{}{2040}}%
+}\RowRule
+
+\WorkTitle{4}{第 1 至 12 题}{06}
+\noindent\WorkCell{.487\textwidth}{40mm}{1}{65-[(5+27)+3]}{3}{%
+  \WorkStep{1}{27 + 3}{\WorkStack{+}{27}{3}{}{30}}%
+  \WorkStep{2}{5 + 30}{\WorkStack{+}{5}{30}{}{35}}%
+  \WorkStep{3}{65 - 35}{\WorkStack{-}{65}{35}{}{30}}%
+}\hfill
+\WorkCell{.487\textwidth}{40mm}{2}{330\div[51-(3+6)\times4]}{4}{%
+  \WorkStep{1}{3 + 6}{\WorkStack{+}{3}{6}{}{9}}%
+  \WorkStep{2}{9 \times 4}{\WorkStack{\times}{9}{4}{}{36}}%
+  \WorkStep{3}{51 - 36}{\WorkStack{-}{51}{36}{}{15}}%
+  \WorkStep{4}{330 \div 15}{\WorkDivision{15}{330}{22}{3}{
+    \DivisionProduct{30}{2}{-1}{0}
+    \DivisionNumber{30}{3}{-2}
+    \DivisionProduct{30}{3}{-3}{1}
+    \DivisionNumber{0}{3}{-4}
+  }}%
+}\RowRule
+
+\noindent\WorkCell{.487\textwidth}{40mm}{3}{38+38\times39}{2}{%
+  \WorkStep{1}{1 + 39}{\WorkStack{+}{1}{39}{}{40}}%
+  \WorkStep{2}{38 \times 40}{\WorkStack{\times}{38}{40}{}{1520}}%
+}\hfill
+\WorkCell{.487\textwidth}{40mm}{4}{320\div[(12+12)-4]}{3}{%
+  \WorkStep{1}{12 + 12}{\WorkStack{+}{12}{12}{}{24}}%
+  \WorkStep{2}{24 - 4}{\WorkStack{-}{24}{4}{}{20}}%
+  \WorkStep{3}{320 \div 20}{\WorkDivision{20}{320}{16}{3}{
+    \DivisionProduct{20}{2}{-1}{0}
+    \DivisionNumber{120}{3}{-2}
+    \DivisionProduct{120}{3}{-3}{0}
+    \DivisionNumber{0}{3}{-4}
+  }}%
+}\RowRule
+
+\noindent\WorkCell{.487\textwidth}{40mm}{5}{195\div[111-(15+9)\times3]}{4}{%
+  \WorkStep{1}{15 + 9}{\WorkStack{+}{15}{9}{}{24}}%
+  \WorkStep{2}{24 \times 3}{\WorkStack{\times}{24}{3}{}{72}}%
+  \WorkStep{3}{111 - 72}{\WorkStack{-}{111}{72}{}{39}}%
+  \WorkStep{4}{195 \div 39}{\WorkDivision{39}{195}{5}{3}{
+    \DivisionProduct{195}{3}{-1}{0}
+    \DivisionNumber{0}{3}{-2}
+  }}%
+}\hfill
+\WorkCell{.487\textwidth}{40mm}{6}{49\times104}{3}{%
+  \WorkStep{1}{49 \times 100}{\WorkStack{\times}{49}{100}{}{4900}}%
+  \WorkStep{2}{49 \times 4}{\WorkStack{\times}{49}{4}{}{196}}%
+  \WorkStep{3}{4900 + 196}{\WorkStack{+}{4900}{196}{}{5096}}%
+}\RowRule
+
+\noindent\WorkCell{.487\textwidth}{40mm}{7}{18\times301-18}{2}{%
+  \WorkStep{1}{301 - 1}{\WorkStack{-}{301}{1}{}{300}}%
+  \WorkStep{2}{18 \times 300}{\WorkStack{\times}{18}{300}{}{5400}}%
+}\hfill
+\WorkCell{.487\textwidth}{40mm}{8}{760\div[76-(5+4)\times4]}{4}{%
+  \WorkStep{1}{5 + 4}{\WorkStack{+}{5}{4}{}{9}}%
+  \WorkStep{2}{9 \times 4}{\WorkStack{\times}{9}{4}{}{36}}%
+  \WorkStep{3}{76 - 36}{\WorkStack{-}{76}{36}{}{40}}%
+  \WorkStep{4}{760 \div 40}{\WorkDivision{40}{760}{19}{3}{
+    \DivisionProduct{40}{2}{-1}{0}
+    \DivisionNumber{360}{3}{-2}
+    \DivisionProduct{360}{3}{-3}{0}
+    \DivisionNumber{0}{3}{-4}
+  }}%
+}\RowRule
+
+\noindent\WorkCell{.487\textwidth}{40mm}{9}{378\div[(25+11)-9]}{3}{%
+  \WorkStep{1}{11 - 9}{\WorkStack{-}{11}{9}{}{2}}%
+  \WorkStep{2}{25 + 2}{\WorkStack{+}{25}{2}{}{27}}%
+  \WorkStep{3}{378 \div 27}{\WorkDivision{27}{378}{14}{3}{
+    \DivisionProduct{27}{2}{-1}{0}
+    \DivisionNumber{108}{3}{-2}
+    \DivisionProduct{108}{3}{-3}{0}
+    \DivisionNumber{0}{3}{-4}
+  }}%
+}\hfill
+\WorkCell{.487\textwidth}{40mm}{10}{14\times301-14}{2}{%
+  \WorkStep{1}{301 - 1}{\WorkStack{-}{301}{1}{}{300}}%
+  \WorkStep{2}{14 \times 300}{\WorkStack{\times}{14}{300}{}{4200}}%
+}\RowRule
+
+\noindent\WorkCell{.487\textwidth}{40mm}{11}{5\times(30+20)}{2}{%
+  \WorkStep{1}{30 + 20}{\WorkStack{+}{30}{20}{}{50}}%
+  \WorkStep{2}{5 \times 50}{\WorkStack{\times}{5}{50}{}{250}}%
+}\hfill
+\WorkCell{.487\textwidth}{40mm}{12}{86\times104}{3}{%
+  \WorkStep{1}{86 \times 100}{\WorkStack{\times}{86}{100}{}{8600}}%
+  \WorkStep{2}{86 \times 4}{\WorkStack{\times}{86}{4}{}{344}}%
+  \WorkStep{3}{8600 + 344}{\WorkStack{+}{8600}{344}{}{8944}}%
+}\RowRule
+\end{document}
